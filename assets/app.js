@@ -3,8 +3,8 @@
   'use strict';
 
   var $ = function (id) { return document.getElementById(id); };
-  // 默认仅为一个公开示例仓库，请在「设置」中改成自己要管理的仓库
-  var DEFAULT_REPO = 'https://github.com/soulans/github-folder-manager';
+  // 不预填任何仓库地址；设置框内只展示格式示例，由用户自行填写
+  var DEFAULT_REPO = '';
   var K_CFG = 'ghe.config', K_EXP = 'ghe.expanded', K_THEME = 'ghe.theme', K_SIDE = 'ghe.sidebar';
   var K_INIT = 'ghe.initialized';
 

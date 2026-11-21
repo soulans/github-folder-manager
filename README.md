@@ -55,13 +55,13 @@ python serve.py
 
 | 配置项 | 说明 |
 | --- | --- |
-| 仓库 | `https://github.com/owner/repo` 或简写 `owner/repo`，例如 `your-name/your-repo` |
+| 仓库 | `https://github.com/owner/repo` 或简写 `owner/repo`，例如 `soulans/github-folder-manager` |
 | Token | GitHub Personal Access Token |
 | 分支 | 留空会自动检测默认分支；也可手动指定，例如 `main` |
 | API 地址 | 默认 `https://api.github.com`，GitHub Enterprise 可自行修改 |
 | 代理 | 例如 `http://127.0.0.1:7890` 或 `socks5://127.0.0.1:1080`，留空表示直连 |
 
-> 首次打开时仓库地址会预填本仓库地址（`soulans/github-folder-manager`）作为示例，请改成自己要管理的仓库。
+> 程序不会预填任何仓库地址；请在「设置」中自行填写，输入框中的 `owner/repo` 仅为格式示例。
 
 **Token 权限**：细粒度 Token 需要 `Contents: read and write`；经典 Token 需要 `repo` 权限。
 

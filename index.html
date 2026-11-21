@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub 文件管理器</title>
+<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+</head>
+<body>
+<!-- 图标精灵 -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="i-repo" viewBox="0 0 24 24"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v18H6.5A2.5 2.5 0 0 0 4 22V4.5Z"/><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-folder-plus" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v3"/><path d="M3 7v12a2 2 0 0 0 2 2h9"/><path d="M18 15v6M15 18h6"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4m0 0L8 8m4-4 4 4"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 6.2"/><path d="M20 4v7h-7"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21h-4v-.1A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.9.3l-.1.1-2.8-2.8.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3v-4h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.3-1.9l-.1-.1 2.8-2.8.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3h4v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1 2.8 2.8-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21v4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 13.2A8.5 8.5 0 0 1 10.8 3 8.5 8.5 0 1 0 21 13.2Z"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8M7 3v5h8"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m3 0-1 15H6L5 6M10 11v6m4-6v6"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m20 6-11 11-5-5"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="M10.3 3.9 2.4 17.5A2 2 0 0 0 4.1 20.5h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4m0 4h.01"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="m8 8-4 4 4 4m8-8 4 4-4 4m-3-11-2 18"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="m10.8 12.2 8-8M17 5l3 3m-5 1 3 3"/></symbol>
+  <symbol id="i-win-min" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-win-max" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="1"/></symbol>
+  <symbol id="i-win-restore" viewBox="0 0 24 24"><rect x="4" y="8" width="12" height="12" rx="1"/><path d="M8 8V5a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-3"/></symbol>
+  <symbol id="i-check-square" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="m8 12 3 3 5-6"/></symbol>
+  <symbol id="i-select-all" viewBox="0 0 24 24"><rect x="3" y="3" width="13" height="13" rx="2"/><path d="M8 21h11a2 2 0 0 0 2-2V8"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+  <symbol id="i-move" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18m-9-9-3 3m3-3 3 3m-3 15-3-3m3 3 3-3M3 12l3-3m-3 3 3 3m15-3-3-3m3 3-3 3"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></symbol>
+</svg>
+
+<div class="app">
+  <header class="topbar" id="topbar">
+    <div class="brand">
+      <svg class="ico brand-ico"><use href="#i-repo"></use></svg>
+      <span>GitHub 文件管理器</span>
+    </div>
+    <div class="repo-pill" id="repoPill">
+      <svg class="ico"><use href="#i-repo"></use></svg>
+      <span id="repoLabel">未配置仓库</span>
+      <span class="branch" id="branchPill">—</span>
+    </div>
+    <div class="top-actions">
+      <div class="mode-switch" id="modeSwitch">
+        <button class="mode-btn" data-mode="browse" title="编辑模式"><svg class="ico"><use href="#i-code"></use></svg><span>编辑</span></button>
+        <button class="mode-btn active" data-mode="manage" title="文件管理模式"><svg class="ico"><use href="#i-list"></use></svg><span>管理</span></button>
+      </div>
+      <div class="searchbox">
+        <svg class="ico"><use href="#i-search"></use></svg>
+        <input id="searchInput" type="text" placeholder="搜索文件名…" autocomplete="off" spellcheck="false">
+        <kbd>Ctrl F</kbd>
+      </div>
+      <button class="btn" id="btnNewFile" title="新建文件"><svg class="ico"><use href="#i-plus"></use></svg><span>新建文件</span></button>
+      <button class="btn" id="btnNewFolder" title="新建文件夹"><svg class="ico"><use href="#i-folder-plus"></use></svg><span>文件夹</span></button>
+      <button class="btn" id="btnUpload" title="上传本地文件"><svg class="ico"><use href="#i-upload"></use></svg><span>上传</span></button>
+      <input type="file" id="fileInput" multiple hidden>
+      <span class="divider"></span>
+      <button class="btn icon-only" id="btnTheme" title="切换主题"><svg class="ico"><use href="#i-moon"></use></svg></button>
+      <button class="btn icon-only" id="btnSettings" title="设置"><svg class="ico"><use href="#i-settings"></use></svg></button>
+    </div>
+    <div class="win-controls" id="winControls" hidden>
+      <button class="win-btn" id="winMin" title="最小化"><svg class="ico"><use href="#i-win-min"></use></svg></button>
+      <button class="win-btn" id="winMax" title="最大化 / 还原"><svg class="ico"><use href="#i-win-max"></use></svg></button>
+      <button class="win-btn close" id="winClose" title="关闭"><svg class="ico"><use href="#i-close"></use></svg></button>
+    </div>
+  </header>
+
+  <div class="commitbar">
+    <svg class="ico"><use href="#i-save"></use></svg>
+    <input id="commitInput" type="text" placeholder="提交信息（例如：更新首页内容）" autocomplete="off">
+    <span class="commit-hint" id="commitHint">留空将自动生成提交信息</span>
+  </div>
+
+  <div class="workspace">
+    <aside class="sidebar" id="sidebar">
+      <div class="side-head">
+        <span>仓库文件</span>
+        <div>
+          <button class="icon-btn" id="btnCollapseAll" title="全部折叠"><svg class="ico"><use href="#i-chevron"></use></svg></button>
+          <button class="icon-btn" id="btnRefresh" title="刷新文件树"><svg class="ico"><use href="#i-refresh"></use></svg></button>
+        </div>
+      </div>
+      <div class="tree" id="tree" tabindex="0"></div>
+      <div class="side-foot" id="treeStatus">连接后可浏览文件</div>
+    </aside>
+
+    <div class="resizer" id="resizer" title="拖动调整宽度"></div>
+
+    <main class="main">
+      <div class="breadcrumb" id="breadcrumb"><span class="muted">尚未打开仓库</span></div>
+      <div class="toasts" id="toasts"></div>
+      <div class="upload-progress" id="uploadProgress" hidden>
+        <div class="up-head">
+          <span id="uploadTitle">正在上传</span>
+          <span id="uploadPercent">0%</span>
+        </div>
+        <div class="up-bar"><i id="uploadBar"></i></div>
+        <div class="up-detail" id="uploadDetail">准备中…</div>
+      </div>
+
+      <div class="tabs" id="tabs"></div>
+
+      <div class="manage-panel" id="managePanel" hidden>
+        <div class="manage-toolbar">
+          <div class="manage-title">
+            <svg class="ico"><use href="#i-list"></use></svg>
+            <strong>文件管理模式</strong>
+            <span id="manageSelection" class="muted">未选择文件</span>
+          </div>
+          <div class="manage-actions">
+            <button class="btn small" id="btnMgrNewFile"><svg class="ico"><use href="#i-plus"></use></svg><span>新建文本</span></button>
+            <button class="btn small" id="btnMgrNewFolder"><svg class="ico"><use href="#i-folder-plus"></use></svg><span>新建文件夹</span></button>
+            <button class="btn small" id="btnMgrUpload"><svg class="ico"><use href="#i-upload"></use></svg><span>上传</span></button>
+            <input type="file" id="mgrFileInput" multiple hidden>
+            <span class="divider"></span>
+            <button class="btn small" id="btnMgrSelectAll"><svg class="ico"><use href="#i-select-all"></use></svg><span>全选本目录</span></button>
+            <button class="btn small" id="btnMgrRename"><svg class="ico"><use href="#i-edit"></use></svg><span>重命名</span></button>
+            <button class="btn small" id="btnMgrCopy"><svg class="ico"><use href="#i-copy"></use></svg><span>复制</span></button>
+            <button class="btn small" id="btnMgrMove"><svg class="ico"><use href="#i-move"></use></svg><span>移动</span></button>
+            <button class="btn small danger-ghost" id="btnMgrDelete"><svg class="ico"><use href="#i-trash"></use></svg><span>删除</span></button>
+          </div>
+        </div>
+        <div class="manage-body">
+          <div class="file-explorer" id="fileExplorer">
+            <div class="explorer-head">
+              <button class="col col-name sortable" data-sort="name">名称 <span class="sort-ind"></span></button>
+              <button class="col col-type sortable" data-sort="type">类型 <span class="sort-ind"></span></button>
+              <button class="col col-size sortable" data-sort="size">大小 <span class="sort-ind"></span></button>
+              <button class="col col-status sortable" data-sort="status">状态 <span class="sort-ind"></span></button>
+            </div>
+            <div class="file-list" id="fileList" tabindex="0"></div>
+            <div class="rubber-band" id="rubberBand" hidden></div>
+            <div class="explorer-foot">
+              <span id="explorerStatus">—</span>
+              <span class="grow"></span>
+              <span class="hint">单击选择 · Ctrl/Shift 多选 · 空白处拖动框选 · 双击进入文件夹或编辑 · 拖到文件夹可移动</span>
+            </div>
+          </div>
+          <div class="staged-panel" id="stagedPanel">
+            <div class="staged-head">
+              <span>待提交更改 <b id="stagedCount">0</b> <small>（修改后一键提交）</small></span>
+              <div>
+                <button class="icon-btn" id="btnStagedToggle" title="折叠 / 展开待提交列表"><svg class="ico"><use href="#i-chevron"></use></svg></button>
+                <button class="btn small" id="btnStagedClear">清空</button>
+              </div>
+            </div>
+            <div class="staged-list" id="stagedList"></div>
+          </div>
+          <div class="stage-editor" id="stageEditor" hidden>
+            <div class="stage-editor-head">
+              <span id="stageEditorName">—</span>
+              <button class="btn small" id="btnStageEditDone"><svg class="ico"><use href="#i-check"></use></svg><span>完成编辑</span></button>
+            </div>
+            <textarea id="stageCode" spellcheck="false"></textarea>
+          </div>
+        </div>
+        <div class="manage-foot">
+          <svg class="ico"><use href="#i-save"></use></svg>
+          <input id="manageCommitInput" type="text" placeholder="提交信息（例如：批量更新资源文件）" autocomplete="off">
+          <button class="btn primary" id="btnCommitAll"><svg class="ico"><use href="#i-check"></use></svg><span>一键提交</span></button>
+        </div>
+      </div>
+
+      <div class="editor-area" id="editorArea">
+        <div class="empty-state" id="emptyState">
+          <svg class="empty-ico"><use href="#i-code"></use></svg>
+          <h2>像管理文件夹一样管理你的仓库</h2>
+          <p>点击左侧文件查看与编辑，或拖动本地文件到此处上传。</p>
+          <p class="tip">第一次使用请先点击右上角 <svg class="ico inline"><use href="#i-settings"></use></svg> 配置仓库地址与 Token。</p>
+          <button class="btn primary" id="btnSetupNow">打开设置</button>
+        </div>
+
+        <div class="editor-wrap" id="editorWrap" hidden>
+          <div class="file-toolbar">
+            <div class="file-title">
+              <span class="badge" id="fileBadge">TXT</span>
+              <span id="editorFileName">—</span>
+              <span class="dirty-dot" id="dirtyDot" hidden title="有未保存的修改"></span>
+            </div>
+            <div class="file-actions">
+              <button class="btn small" id="btnTogglePreview"><svg class="ico"><use href="#i-eye"></use></svg><span>预览</span></button>
+              <button class="btn small" id="btnDownloadFile"><svg class="ico"><use href="#i-download"></use></svg><span>下载</span></button>
+              <button class="btn small primary" id="btnSaveFile"><svg class="ico"><use href="#i-save"></use></svg><span>保存提交</span></button>
+              <button class="btn small icon-only" id="btnCloseTab" title="关闭标签"><svg class="ico"><use href="#i-close"></use></svg></button>
+            </div>
+          </div>
+          <div class="editor-split">
+            <div class="code-host" id="codeHost"><textarea id="code"></textarea></div>
+            <div class="preview" id="preview" hidden></div>
+          </div>
+          <div class="binary-state" id="binaryState" hidden>
+            <svg class="empty-ico"><use href="#i-file"></use></svg>
+            <h3>这是一个二进制文件</h3>
+            <p id="binaryInfo">无法在文本编辑器中修改，可下载后查看。</p>
+            <button class="btn primary" id="btnDownloadBinary"><svg class="ico"><use href="#i-download"></use></svg><span>下载文件</span></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="statusbar">
+        <span id="statusRepo">未连接</span>
+        <span class="sep"></span>
+        <span id="statusPath">/</span>
+        <span class="grow"></span>
+        <span id="statusFiles"></span>
+        <span class="sep"></span>
+        <span id="statusRate">—</span>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- 设置弹窗 -->
+<div class="overlay" id="settingsModal" hidden>
+  <div class="modal wide" role="dialog" aria-modal="true" aria-label="设置">
+    <div class="modal-head">
+      <h2><svg class="ico"><use href="#i-settings"></use></svg> 设置</h2>
+      <button class="icon-btn" data-close="settingsModal" title="关闭"><svg class="ico"><use href="#i-close"></use></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label for="cfgRepo">仓库地址</label>
+        <input id="cfgRepo" type="text" placeholder="https://github.com/owner/repo 或 owner/repo" spellcheck="false">
+        <div class="help">支持完整的 GitHub 仓库链接，也支持 owner/repo 缩写。</div>
+      </div>
+      <div class="form-row">
+        <label for="cfgToken">Personal Access Token</label>
+        <div class="input-with-btn">
+          <input id="cfgToken" type="password" placeholder="ghp_… 或 github_pat_…" autocomplete="off" spellcheck="false">
+          <button class="btn small" id="btnToggleToken" title="显示/隐藏">显示</button>
+        </div>
+        <div class="help">需要 <b>Contents: read and write</b> 权限（fine-grained token）或经典 token 的 <b>repo</b> 权限。Token 只保存在本机浏览器，不会上传到任何服务器。</div>
+        <div class="help token-links">没有 Token？
+          <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener"><svg class="ico inline"><use href="#i-key"></use></svg>创建细粒度 Token</a>
+          <span class="sep">·</span>
+          <a href="https://github.com/settings/tokens/new" target="_blank" rel="noopener"><svg class="ico inline"><use href="#i-key"></use></svg>创建经典 Token</a>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="cfgBranch">分支</label>
+          <input id="cfgBranch" type="text" placeholder="留空自动检测默认分支" spellcheck="false">
+        </div>
+        <div class="form-row">
+          <label for="cfgApi">API 地址（GitHub Enterprise 可选）</label>
+          <input id="cfgApi" type="text" placeholder="https://api.github.com" spellcheck="false">
+        </div>
+      </div>
+      <div class="form-row">
+        <label for="cfgProxy">本地代理（可选）</label>
+        <input id="cfgProxy" type="text" placeholder="http://127.0.0.1:7890 或 socks5://127.0.0.1:1080" spellcheck="false">
+        <div class="help">用于本机代理软件（如 Clash / V2Ray）转发 GitHub API 请求。仅桌面版生效；浏览器预览模式不支持代理。</div>
+      </div>
+      <label class="check-row"><input type="checkbox" id="cfgRemember" checked><span>在本机记住以上配置</span></label>
+      <div class="test-line">
+        <button class="btn" id="btnTest"><svg class="ico"><use href="#i-refresh"></use></svg><span>测试连接</span></button>
+        <span id="testResult" class="test-result"></span>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" data-close="settingsModal">取消</button>
+      <button class="btn primary" id="btnSaveSettings"><svg class="ico"><use href="#i-check"></use></svg><span>保存并连接</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- 输入弹窗 -->
+<div class="overlay" id="promptModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head"><h2 id="promptTitle">输入</h2><button class="icon-btn" data-close="promptModal"><svg class="ico"><use href="#i-close"></use></svg></button></div>
+    <div class="modal-body">
+      <div class="form-row"><label id="promptLabel" for="promptInput"></label><input id="promptInput" type="text" spellcheck="false"></div>
+      <div class="help" id="promptHelp"></div>
+    </div>
+    <div class="modal-foot"><button class="btn" data-close="promptModal">取消</button><button class="btn primary" id="btnPromptOk">确定</button></div>
+  </div>
+</div>
+
+<div class="context-menu" id="contextMenu" hidden></div>
+<div class="drop-mask" id="dropMask" hidden><div><svg class="empty-ico"><use href="#i-upload"></use></svg><h2>松开以上传到当前文件夹</h2></div></div>
+
+<script src="assets/utils.js"></script>
+<script src="assets/github.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+{
+  "name": "github-folder-manager",
+  "version": "1.0.0",
+  "description": "Manage any GitHub repository like a local folder",
+  "license": "MIT",
+  "author": "soulans",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/soulans/github-folder-manager.git"
+  },
+  "homepage": "https://github.com/soulans/github-folder-manager#readme",
+  "bugs": {
+    "url": "https://github.com/soulans/github-folder-manager/issues"
+  },
+  "keywords": [
+    "github",
+    "file-manager",
+    "electron",
+    "git-data-api",
+    "github-pages",
+    "explorer"
+  ],
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win --x64"
+  },
+  "devDependencies": {
+    "electron": "^31.7.7",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.soulans.githubfoldermanager",
+    "productName": "GitHub文件管理器",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "index.html",
+      "main.js",
+      "preload.js",
+      "assets/**/*"
+    ],
+    "win": {
+      "icon": "assets/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "artifactName": "GitHub文件管理器-安装版-${version}-${arch}.${ext}",
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "portable": {
+      "artifactName": "GitHub文件管理器-便携版-${version}-${arch}.${ext}"
+    }
+  },
+  "dependencies": {
+    "https-proxy-agent": "^9.1.0",
+    "socks-proxy-agent": "^10.1.0"
+  }
+}

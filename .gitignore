@@ -1,0 +1,25 @@
+# 依赖
+node_modules/
+
+# 构建产物（exe 请通过 GitHub Releases 发布，不要提交进仓库）
+dist/
+
+# Electron 临时用户数据、调试脚本与截图
+.tmp-*/
+_*.png
+_*.py
+*.log
+
+# 本地工作数据（项目笔记，不随仓库公开）
+.workbuddy/
+
+# 编辑器与系统文件
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Python 缓存（serve.py 本地预览脚本）
+__pycache__/
+*.pyc
